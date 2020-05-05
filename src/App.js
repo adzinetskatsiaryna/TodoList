@@ -11,36 +11,91 @@ class App extends React.Component {
     newTaskTitleRef = React.createRef()
     state = {
         tasks: [
-            {title: "CSS", isDone: false, priority: "hight"},
-            {title: "JS", isDone: false, priority: "low"},
-            {title: "HTML", isDone: true, priority: "hight"},
-            {title: "React", isDone: true, priority: "medium"},
-            {title: "JQuery", isDone: false, priority: "hight"},
+            // {id: 0, title: "CSS", isDone: false, priority: "hight"},
+            // {id: 1, title: "JS", isDone: false, priority: "low"},
+            // {id: 2, title: "HTML", isDone: true, priority: "hight"},
+            // {id: 3, title: "React", isDone: true, priority: "medium"},
+            // {id: 4, title: "JQuery", isDone: false, priority: "hight"},
         ],
     filterValue: "All"
 };
+    nextTaskId = 0;
+
+    saveState = ()=>{
+        let stateAsString = JSON.stringify(this.state);
+        localStorage.setItem("state", stateAsString);
+    };
+
+    restoresState = ()=>{
+        let state = {
+            tasks: [],
+            filterValue: 'All'
+        };
+        let stateAsString= localStorage.getItem("state");
+        if(stateAsString){
+            state = JSON.parse(stateAsString);
+        }
+
+        this.setState(state, ()=>{
+            this.state.tasks.forEach(t=>{
+                if(t.id>=this.nextTaskId){
+                    this.nextTaskId = t.id + 1
+                }
+            })
+        });
+    };
+
+    componentDidMount() {
+        this.restoresState();
+    }
+
     addTask = (newTitle) =>{
         // let newTitle = this.newTaskTitleRef.current.value;
         // this.newTaskTitleRef.current.value = '';
         let newTask =  {
-            title: newTitle, isDone: false, priority: "hight"
+            title: newTitle,
+            isDone: false,
+            priority: "hight",
+            id: this.nextTaskId,
         };
+        this.nextTaskId++;
         let newTasks = [...this.state.tasks, newTask];
-        this.setState({tasks: newTasks})
+        this.setState({tasks: newTasks}, this.saveState);
     };
     changeFilter = (newFilterValue) =>{
         this.setState({filterValue: newFilterValue});
     };
-    changeStatus = (task, isDone)=>{
+    changeTask = (taskId, newPropValue)=>{
         let newTask = this.state.tasks.map(t=>{
-            if(t === task){
-                return{...t, isDone: isDone}
+            if(t.id === taskId){
+                return{...t, ...newPropValue}
             }
             return t;
-        })
-        this.setState({tasks: newTask})
+        });
+        this.setState({tasks: newTask}, this.saveState)
+    };
+
+    changeStatus = (taskId, isDone)=>{
+        this.changeTask(taskId, {isDone: isDone})
+        // let newTask = this.state.tasks.map(t=>{
+        //     if(t.id === taskId){
+        //         return{...t, isDone: isDone}
+        //     }
+        //     return t;
+        // })
+        // this.setState({tasks: newTask})
     }
 
+    changeTitle = (taskId, title)=>{
+        this.changeTask(taskId, {title: title})
+        // let newTask = this.state.tasks.map(t=>{
+        //     if(t.id === taskId){
+        //         return{...t, title: title}
+        //     }
+        //     return t;
+        // })
+        // this.setState({tasks: newTask})
+    };
     render = () => {
         let filtredTasks=this.state.tasks.filter(t =>{
                 switch (this.state.filterValue) {
@@ -72,6 +127,7 @@ class App extends React.Component {
                     <TodoListHeader addTask={this.addTask}/>
                     <TodoListTasks tasks ={filtredTasks}
                                    changeStatus={this.changeStatus}
+                                   changeTitle={this.changeTitle}
                     />
                     <TodoListFooter
                         filterValue = {this.state.filterValue}
