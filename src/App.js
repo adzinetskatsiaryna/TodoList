@@ -96,6 +96,14 @@ class App extends React.Component {
         // })
         // this.setState({tasks: newTask})
     };
+
+    deleteTask = (taskId)=>{
+        let tasks = this.state.tasks.filter((t)=>{
+            return t.id !== taskId
+        });
+        this.setState({tasks}, this.saveState)
+    };
+
     render = () => {
         let filtredTasks=this.state.tasks.filter(t =>{
                 switch (this.state.filterValue) {
@@ -128,6 +136,7 @@ class App extends React.Component {
                     <TodoListTasks tasks ={filtredTasks}
                                    changeStatus={this.changeStatus}
                                    changeTitle={this.changeTitle}
+                                   deleteTask={this.deleteTask}
                     />
                     <TodoListFooter
                         filterValue = {this.state.filterValue}
