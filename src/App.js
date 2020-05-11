@@ -8,7 +8,7 @@ class App extends React.Component {
     constructor(props) {
         super(props);
     }
-    newTaskTitleRef = React.createRef()
+    // newTaskTitleRef = React.createRef()
     state = {
         tasks: [
             // {id: 0, title: "CSS", isDone: false, priority: "hight"},
@@ -19,7 +19,7 @@ class App extends React.Component {
         ],
     filterValue: "All"
 };
-    nextTaskId = 0;
+
 
     saveState = ()=>{
         let stateAsString = JSON.stringify(this.state);
@@ -49,14 +49,17 @@ class App extends React.Component {
         this.restoresState();
     }
 
+    nextTaskId = 0;
+
     addTask = (newTitle) =>{
         // let newTitle = this.newTaskTitleRef.current.value;
         // this.newTaskTitleRef.current.value = '';
         let newTask =  {
+            id: this.nextTaskId,
             title: newTitle,
             isDone: false,
             priority: "hight",
-            id: this.nextTaskId,
+
         };
         this.nextTaskId++;
         let newTasks = [...this.state.tasks, newTask];
