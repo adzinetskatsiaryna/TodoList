@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import TodoListHeader from "./TodoListHeader";
+import AddNewItemForm from "./AddNewItemForm";
 import TodoListTasks from "./TodoListTasks";
 
 class TodoListFooter extends React.Component {
