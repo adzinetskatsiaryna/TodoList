@@ -8,6 +8,7 @@ class TodoListTasks extends React.Component {
 
         let myFn = task =>{
             return <TodoListTask
+                id={this.props.id}
                 key={task.id}
                 task={task}
                 changeStatus = {this.props.changeStatus}

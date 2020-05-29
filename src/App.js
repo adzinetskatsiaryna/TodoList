@@ -5,6 +5,7 @@ import TodoListTasks from "./TodoListTasks";
 import TodoListFooter from "./TodoListFooter";
 import TodoListTask from "./TodoListTask";
 import TodoList from "./TodoList";
+import {connect} from "react-redux";
 
 class App extends React.Component {
 
@@ -13,7 +14,7 @@ class App extends React.Component {
             // {id:1, title: 'Week tasks'},
             // {id:2, title: 'Day tasks'}
         ]
-    }
+    };
 //     constructor(props) {
 //         super(props);
 //     }
@@ -116,52 +117,68 @@ class App extends React.Component {
 //         this.setState({tasks}, this.saveState)
 //     };
 //
-    saveState = ()=>{
-        let stateAsString = JSON.stringify(this.state);
-        localStorage.setItem("todolists",  stateAsString);
+//     saveState = ()=>{
+//         let stateAsString = JSON.stringify(this.state);
+//         localStorage.setItem("todolists",  stateAsString);
+//     };
+//
+//     restoresState = ()=>{
+//         let state = {
+//             todolists: [],
+//
+//         };
+//         let stateAsString= localStorage.getItem("todolists" + this.props.id);
+//         if(stateAsString){
+//             state = JSON.parse(stateAsString);
+//         }
+//
+//         this.setState(state, ()=>{
+//             this.state.todolists.forEach(t=>{
+//                 if(t.id>=this.nextTodoId){
+//                     this.nextTodoId = t.id + 1
+//                 }
+//             })
+//         });
+//     };
+//
+//     componentDidMount() {
+//         this.restoresState()
+//     };
+
+    // nextTodoId = 0;
+
+    // addTodolist = (newTitle) =>{
+    //     let newTodo =  {
+    //         id: this.nextTodoId,
+    //         title: newTitle
+    //
+    //     };
+    //     this.nextTodoId++;
+    //     let newTodos = [...this.state.todolists, newTodo];
+    //     this.setState({todolists: newTodos}, this.saveState);
+    // };
+
+    addTodolist = (newTitle)=>{
+
+        // let newTodolist = {
+        //     id: this.nextTodoId,
+        //     title: newTitle,
+        //     tasks: []
+        // };
+        // this.nextTodoId++
+        this.props.createtodolist(newTitle)
     };
 
-    restoresState = ()=>{
-        let state = {
-            todolists: [],
-
-        };
-        let stateAsString= localStorage.getItem("todolists" + this.props.id);
-        if(stateAsString){
-            state = JSON.parse(stateAsString);
-        }
-
-        this.setState(state, ()=>{
-            this.state.todolists.forEach(t=>{
-                if(t.id>=this.nextTodoId){
-                    this.nextTodoId = t.id + 1
-                }
-            })
-        });
+    deleteTodoList=(todolistId)=>{
+        this.props.deleteTodo(todolistId)
     };
-
-    componentDidMount() {
-        this.restoresState()
-    };
-
-    nextTodoId = 0;
-    addTodolist = (newTitle) =>{
-        let newTodo =  {
-            id: this.nextTodoId,
-            title: newTitle
-
-        };
-        this.nextTodoId++;
-        let newTodos = [...this.state.todolists, newTodo];
-        this.setState({todolists: newTodos}, this.saveState);
-    };
-
-
 
         render = () => {
 
-        let todolists = this.state.todolists.map((t)=>{
-            return <TodoList key = {t.id} id = {t.id} title = {t.title} />
+        let todolists = this.props
+            .todolists
+            .map((t)=>{
+            return <TodoList key = {t.id} id = {t.id} title = {t.title} tasks={t.tasks} deleteTodoList = {this.deleteTodoList} />
         });
         // let filtredTasks=this.state.tasks.filter(t =>{
         //         switch (this.state.filterValue) {
@@ -196,5 +213,35 @@ class App extends React.Component {
     }
 }
 
-export default App;
+
+
+const mapStateToProps = (state) => {
+    return {
+        todolists: state.todolists
+    }
+};
+const mapDispatchToProps= (dispatch) => {
+    return {
+        createtodolist: (newTitle)=>{
+            let action={
+                type: 'CREATE_TODOLIST',
+                title: newTitle
+            };
+            dispatch(action)
+        },
+        deleteTodo: (todolistId)=>{
+            let action={
+                type: 'DELETE_TODOLIST',
+                todolistId: todolistId
+            };
+            dispatch(action)
+        }
+    }
+};
+
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
+export default ConnectedApp;
+
+
+
 
